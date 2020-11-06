@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.luv2code.springdemo.entity.Customer;
 import com.luv2code.springdemo.service.CustomerService;
@@ -20,12 +21,8 @@ public class CustomerController {
 	//need to inject our service into controller
 	@Autowired
 	private CustomerService customerService;
-	@RequestMapping
-	public void test() {
-		System.out.println("TEST");
-	}
 	
-	@PostMapping("/list")
+	@GetMapping("/list")
 	public String listCustomers(Model theModel) {
 		//get customers from dao
 		List<Customer> theCustomer = customerService.getCustomers();
@@ -49,6 +46,27 @@ public class CustomerController {
 		
 		//save the customer using service
 		customerService.saveCustomer(theCustomer);
+		
+		return "redirect:/customer/list";
+	}
+	
+	@GetMapping("/showFormForUpdate")
+	public String showFormForUpdate(@RequestParam("customerId") int theId,
+									Model theModel) {
+		//get id from customer service
+		Customer theCustomer = customerService.getCustomer(theId);
+		
+		//add the customer of the desired primary key to model attribute
+		theModel.addAttribute("customer", theCustomer);
+		
+		return "customer-add";
+	}
+	
+	@GetMapping("/delete")
+	public String delete(@RequestParam("customerId") int theId,
+						Model theModel) {
+		//get the id from customer service
+		customerService.getDelete(theId);
 		
 		return "redirect:/customer/list";
 	}
